@@ -1,0 +1,58 @@
+﻿<div class="jumbotron">
+    <h1>ASP.NET</h1>
+    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
+    <p><a href="http://asp.net" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <fieldset>
+    
+            @if (Utilities.Instance.Status == Status.Ready)
+            {
+                <legend>Congratulations!</legend>
+                <p class="message">Geo Library for Amazon DynamoDB Sample Server is running.</p>
+            }
+            else if(Utilities.Instance.Status == Status.NotStarted)
+            {
+                <p class="message">Geo Library for Amazon DynamoDB Sample Server
+				is preparing to start</p>
+            }else if (Utilities.Instance.Status == Status.CreatingTable)
+            {
+                <p class="message">Geo Library for Amazon DynamoDB Sample Server
+				is creating a table. This may take a few minutes. Please wait.</p>
+            } else if (Utilities.Instance.Status == Status.InsertingDataToTable)
+            {
+                <p class="message">Geo Library for Amazon DynamoDB Sample Server
+				is inserting test data into the table. This may take 10 to 20 minutes. Please wait.</p>
+            }
+        </fieldset>
+        
+        @if (!Utilities.Instance.IsAccessKeySet)
+        {
+            	<p class="warning">
+		Warning: Your <b>AWS_ACCESS_KEY_ID</b> is not properly configured.
+	</p>
+        } else if (!Utilities.Instance.IsSecretKeySet)
+        {
+            	<p class="warning">
+		Warning: Your <b>AWS_SECRET_KEY</b> is not properly configured.
+	</p>
+        }else if (!Utilities.Instance.IsTableNameSet)
+        {
+            <p class="warning">
+		Warning: Your <b>PARAM1</b> is not properly configured. Enter your
+		Amazon DynamoDB table name.
+	</p>
+        }else if (!Utilities.Instance.IsRegionNameSet)
+        {
+            	<p class="warning">
+		Warning: Your <b>PARAM2</b> is not properly configured. Enter your
+		Amazon DynamoDB region name (eg. us-west-2).
+	</p>
+        }
+    </div>
+
+    <div id="footer">
+        <p class="footnote">Geo Library for Amazon DynamoDB Sample Server</p>
+    </div>
+</div>
