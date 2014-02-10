@@ -31,8 +31,9 @@ namespace Amazon.Geo.Util
                     {
                         KeyType = KeyType.RANGE,
                         AttributeName = config.RangeKeyAttributeName
-                    }
+                    },
                 },
+                
                 AttributeDefinitions = new List<AttributeDefinition>
                 {
                     new AttributeDefinition
@@ -66,7 +67,7 @@ namespace Amazon.Geo.Util
                             new KeySchemaElement
                             {
                                 KeyType = KeyType.RANGE,
-                                AttributeName = config.RangeKeyAttributeName
+                                AttributeName = config.GeohashAttributeName
                             }
                         },
                         Projection = new Projection
