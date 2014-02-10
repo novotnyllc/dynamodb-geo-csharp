@@ -13,7 +13,7 @@ using Google.Common.Geometry;
 
 namespace Amazon.Geo
 {
-    public class GeoDataManager
+    public sealed class GeoDataManager
     {
         private readonly GeoDataManagerConfiguration _config;
         private readonly DynamoDBManager _dynamoDBManager;
@@ -29,6 +29,27 @@ namespace Amazon.Geo
         public GeoDataManagerConfiguration GeoDataManagerConfiguration
         {
             get { return _config; }
+        }
+
+        /// <summary>
+        ///     <p>
+        ///         Delete a point from the Amazon DynamoDB table.
+        ///     </p>
+        ///     <b>Sample usage:</b>
+        ///     <pre>
+        ///         GeoPoint geoPoint = new GeoPoint(47.5, -122.3);
+        ///         String rangeKey = &quot;a6feb446-c7f2-4b48-9b3a-0f87744a5047&quot;;
+        ///         AttributeValue rangeKeyValue = new AttributeValue().withS(rangeKey);
+        ///         DeletePointRequest deletePointRequest = new DeletePointRequest(geoPoint, rangeKeyValue);
+        ///         DeletePointResult deletePointResult = geoIndexManager.deletePoint(deletePointRequest);
+        ///     </pre>
+        /// </summary>
+        /// <param name="deletePointRequest">Container for the necessary parameters to execute delete point request.</param>
+        /// <returns>Result of delete point request.</returns>
+        public Task<DeletePointResult> DeletePointAsync(DeletePointRequest deletePointRequest)
+        {
+            if (deletePointRequest == null) throw new ArgumentNullException("deletePointRequest");
+            return _dynamoDBManager.DeletePointAsync(deletePointRequest);
         }
 
         /// <summary>
@@ -49,6 +70,7 @@ namespace Amazon.Geo
         /// <returns>Result of radius query request.</returns>
         public async Task<QueryRadiusResult> QueryRadiusAsync(QueryRadiusRequest queryRadiusRequest)
         {
+            if (queryRadiusRequest == null) throw new ArgumentNullException("queryRadiusRequest");
             var latLngRect = S2Util.GetBoundingLatLngRect(queryRadiusRequest);
 
             var cellUnion = S2Manager.FindCellIds(latLngRect);
@@ -60,6 +82,76 @@ namespace Amazon.Geo
             return new QueryRadiusResult(result);
         }
 
+        /// <summary>
+        ///     <p>
+        ///         Get a point from the Amazon DynamoDB table.
+        ///     </p>
+        ///     <b>Sample usage:</b>
+        ///     <pre>
+        ///         GeoPoint geoPoint = new GeoPoint(47.5, -122.3);
+        ///         AttributeValue rangeKeyValue = new AttributeValue().withS(&quot;a6feb446-c7f2-4b48-9b3a-0f87744a5047&quot;);
+        ///         GetPointRequest getPointRequest = new GetPointRequest(geoPoint, rangeKeyValue);
+        ///         GetPointResult getPointResult = geoIndexManager.getPoint(getPointRequest);
+        ///         System.out.println(&quot;item: &quot; + getPointResult.getGetItemResult().getItem());
+        ///     </pre>
+        /// </summary>
+        /// <param name="getPointRequest">Container for the necessary parameters to execute get point request.</param>
+        /// <returns>Result of get point request.</returns>
+        public Task<GetPointResult> GetPointAsync(GetPointRequest getPointRequest)
+        {
+            if (getPointRequest == null) throw new ArgumentNullException("getPointRequest");
+            return _dynamoDBManager.GetPointAsync(getPointRequest);
+        }
+
+        /// <summary>
+        ///     <p>
+        ///         Put a point into the Amazon DynamoDB table. Once put, you cannot update attributes specified in
+        ///         GeoDataManagerConfiguration: hash key, range key, geohash and geoJson. If you want to update these columns, you
+        ///         need to insert a new record and delete the old record.
+        ///     </p>
+        ///     <b>Sample usage:</b>
+        ///     <pre>
+        ///         GeoPoint geoPoint = new GeoPoint(47.5, -122.3);
+        ///         AttributeValue rangeKeyValue = new AttributeValue().withS(&quot;a6feb446-c7f2-4b48-9b3a-0f87744a5047&quot;);
+        ///         AttributeValue titleValue = new AttributeValue().withS(&quot;Original title&quot;);
+        ///         PutPointRequest putPointRequest = new PutPointRequest(geoPoint, rangeKeyValue);
+        ///         putPointRequest.getPutItemRequest().getItem().put(&quot;title&quot;, titleValue);
+        ///         PutPointResult putPointResult = geoDataManager.putPoint(putPointRequest);
+        ///     </pre>
+        /// </summary>
+        /// <param name="putPointRequest">Container for the necessary parameters to execute put point request.</param>
+        /// <returns>Result of put point request.</returns>
+        public Task<PutPointResult> PutPointAsync(PutPointRequest putPointRequest)
+        {
+            if (putPointRequest == null) throw new ArgumentNullException("putPointRequest");
+            return _dynamoDBManager.PutPointAsync(putPointRequest);
+        }
+
+        /// <summary>
+        ///     <p>
+        ///         Update a point data in Amazon DynamoDB table. You cannot update attributes specified in
+        ///         GeoDataManagerConfiguration: hash key, range key, geohash and geoJson. If you want to update these columns, you
+        ///         need to insert a new record and delete the old record.
+        ///     </p>
+        ///     <b>Sample usage:</b>
+        ///     <pre>
+        ///         GeoPoint geoPoint = new GeoPoint(47.5, -122.3);
+        ///         String rangeKey = &quot;a6feb446-c7f2-4b48-9b3a-0f87744a5047&quot;;
+        ///         AttributeValue rangeKeyValue = new AttributeValue().withS(rangeKey);
+        ///         UpdatePointRequest updatePointRequest = new UpdatePointRequest(geoPoint, rangeKeyValue);
+        ///         AttributeValue titleValue = new AttributeValue().withS(&quot;Updated title.&quot;);
+        ///         AttributeValueUpdate titleValueUpdate = new AttributeValueUpdate().withAction(AttributeAction.PUT)
+        ///         .withValue(titleValue);
+        ///         updatePointRequest.getUpdateItemRequest().getAttributeUpdates().put(&quot;title&quot;, titleValueUpdate);
+        ///         UpdatePointResult updatePointResult = geoIndexManager.updatePoint(updatePointRequest);
+        ///     </pre>
+        /// </summary>
+        /// <param name="updatePointRequest">Container for the necessary parameters to execute update point request.</param>
+        /// <returns>Result of update point request.</returns>
+        public Task<UpdatePointResult> UpdatePointAsync(UpdatePointRequest updatePointRequest)
+        {
+            return _dynamoDBManager.UpdatePointAsync(updatePointRequest);
+        }
 
         /// <summary>
         ///     <p>
@@ -82,6 +174,7 @@ namespace Amazon.Geo
         /// <returns>Result of rectangle query request.</returns>
         public async Task<QueryRectangleResult> QueryRectangleAsync(QueryRectangleRequest queryRectangleRequest)
         {
+            if (queryRectangleRequest == null) throw new ArgumentNullException("queryRectangleRequest");
             var latLngRect = S2Util.GetBoundingLatLngRect(queryRectangleRequest);
 
             var cellUnion = S2Manager.FindCellIds(latLngRect);
