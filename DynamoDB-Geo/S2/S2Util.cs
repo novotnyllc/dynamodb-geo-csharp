@@ -10,57 +10,62 @@ namespace Amazon.Geo.S2
 {
     internal static class S2Util
     {
-        /**
-	 * An utility method to get a bounding box of latitude and longitude from a given GeoQueryRequest.
-	 * 
-	 * @param geoQueryRequest
-	 *            It contains all of the necessary information to form a latitude and longitude box.
-	 * 
-	 * */
-        public static S2LatLngRect GetBoundingLatLngRect(GeoQueryRequest geoQueryRequest) {
-		if (geoQueryRequest is QueryRectangleRequest) {
-			QueryRectangleRequest queryRectangleRequest = (QueryRectangleRequest) geoQueryRequest;
 
-			GeoPoint minPoint = queryRectangleRequest.MinPoint;
-			GeoPoint maxPoint = queryRectangleRequest.MaxPoint;
 
-			S2LatLngRect latLngRect = default(S2LatLngRect);
+        /// <summary>
+        /// An utility method to get a bounding box of latitude and longitude from a given GeoQueryRequest.
+        /// </summary>
+        /// <param name="geoQueryRequest">It contains all of the necessary information to form a latitude and longitude box.</param>
+        /// <returns></returns>
+        public static S2LatLngRect GetBoundingLatLngRect(GeoQueryRequest geoQueryRequest)
+        {
+            if (geoQueryRequest is QueryRectangleRequest)
+            {
+                var queryRectangleRequest = (QueryRectangleRequest)geoQueryRequest;
 
-			if (minPoint != null && maxPoint != null) {
-				S2LatLng minLatLng = S2LatLng.FromDegrees(minPoint.Latitude, minPoint.Longitude);
-				S2LatLng maxLatLng = S2LatLng.FromDegrees(maxPoint.Latitude, maxPoint.Longitude);
+                var minPoint = queryRectangleRequest.MinPoint;
+                var maxPoint = queryRectangleRequest.MaxPoint;
 
-				latLngRect = new S2LatLngRect(minLatLng, maxLatLng);
-			}
+                var latLngRect = default(S2LatLngRect);
 
-			return latLngRect;
-		} else if (geoQueryRequest is QueryRadiusRequest) {
-			QueryRadiusRequest queryRadiusRequest = (QueryRadiusRequest) geoQueryRequest;
+                if (minPoint != null && maxPoint != null)
+                {
+                    var minLatLng = S2LatLng.FromDegrees(minPoint.Latitude, minPoint.Longitude);
+                    var maxLatLng = S2LatLng.FromDegrees(maxPoint.Latitude, maxPoint.Longitude);
 
-			GeoPoint centerPoint = queryRadiusRequest.CenterPoint;
-			double radiusInMeter = queryRadiusRequest.RadiusInMeter;
+                    latLngRect = new S2LatLngRect(minLatLng, maxLatLng);
+                }
 
-			S2LatLng centerLatLng = S2LatLng.FromDegrees(centerPoint.Latitude, centerPoint.Longitude);
+                return latLngRect;
+            }
+            else if (geoQueryRequest is QueryRadiusRequest)
+            {
+                var queryRadiusRequest = (QueryRadiusRequest)geoQueryRequest;
 
-			double latReferenceUnit = centerPoint.Latitude > 0.0 ? -1.0 : 1.0;
-			S2LatLng latReferenceLatLng = S2LatLng.FromDegrees(centerPoint.Latitude + latReferenceUnit,
-					centerPoint.Longitude);
-			double lngReferenceUnit = centerPoint.Longitude > 0.0 ? -1.0 : 1.0;
-			S2LatLng lngReferenceLatLng = S2LatLng.FromDegrees(centerPoint.Latitude, centerPoint.Longitude
-					+ lngReferenceUnit);
+                var centerPoint = queryRadiusRequest.CenterPoint;
+                var radiusInMeter = queryRadiusRequest.RadiusInMeter;
 
-			double latForRadius = radiusInMeter / centerLatLng.GetEarthDistance(latReferenceLatLng);
-            double lngForRadius = radiusInMeter / centerLatLng.GetEarthDistance(lngReferenceLatLng);
+                var centerLatLng = S2LatLng.FromDegrees(centerPoint.Latitude, centerPoint.Longitude);
 
-			S2LatLng minLatLng = S2LatLng.FromDegrees(centerPoint.Latitude - latForRadius,
-					centerPoint.Longitude - lngForRadius);
-			S2LatLng maxLatLng = S2LatLng.FromDegrees(centerPoint.Latitude + latForRadius,
-					centerPoint.Longitude + lngForRadius);
+                var latReferenceUnit = centerPoint.Latitude > 0.0 ? -1.0 : 1.0;
+                var latReferenceLatLng = S2LatLng.FromDegrees(centerPoint.Latitude + latReferenceUnit,
+                                                              centerPoint.Longitude);
+                var lngReferenceUnit = centerPoint.Longitude > 0.0 ? -1.0 : 1.0;
+                var lngReferenceLatLng = S2LatLng.FromDegrees(centerPoint.Latitude, centerPoint.Longitude
+                                                                                    + lngReferenceUnit);
 
-			return new S2LatLngRect(minLatLng, maxLatLng);
-		}
+                var latForRadius = radiusInMeter/centerLatLng.GetEarthDistance(latReferenceLatLng);
+                var lngForRadius = radiusInMeter/centerLatLng.GetEarthDistance(lngReferenceLatLng);
 
-        return S2LatLngRect.Empty;
-	}
+                var minLatLng = S2LatLng.FromDegrees(centerPoint.Latitude - latForRadius,
+                                                     centerPoint.Longitude - lngForRadius);
+                var maxLatLng = S2LatLng.FromDegrees(centerPoint.Latitude + latForRadius,
+                                                     centerPoint.Longitude + lngForRadius);
+
+                return new S2LatLngRect(minLatLng, maxLatLng);
+            }
+
+            return S2LatLngRect.Empty;
+        }
     }
 }

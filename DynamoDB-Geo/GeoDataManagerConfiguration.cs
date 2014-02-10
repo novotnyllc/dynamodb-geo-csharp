@@ -7,7 +7,7 @@ using Amazon.DynamoDBv2;
 
 namespace Amazon.Geo
 {
-    public class GeoDataManagerConfiguration
+    public sealed class GeoDataManagerConfiguration
     {
         // Public constants
         public const long MergeThreshold = 2;

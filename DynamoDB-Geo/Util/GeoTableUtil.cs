@@ -8,7 +8,7 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Amazon.Geo.Util
 {
-    public class GeoTableUtil
+    public static class GeoTableUtil
     {
         public static CreateTableRequest GetCreateTableRequest(GeoDataManagerConfiguration config)
         {

@@ -12,7 +12,7 @@ using Amazon.Geo.Util;
 
 namespace Amazon.Geo.DynamoDB
 {
-    internal class DynamoDBManager
+    internal sealed class DynamoDBManager
     {
         private readonly GeoDataManagerConfiguration _config;
 

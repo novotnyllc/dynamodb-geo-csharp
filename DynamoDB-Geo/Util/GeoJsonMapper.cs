@@ -11,7 +11,7 @@ namespace Amazon.Geo.Util
 {
     public static class GeoJsonMapper
     {
-        internal static readonly JsonSerializerSettings JsonSerializerSettings;
+        private static readonly JsonSerializerSettings JsonSerializerSettings;
 
         static GeoJsonMapper()
         {

@@ -8,7 +8,7 @@ using Amazon.DynamoDBv2.Model;
 
 namespace Amazon.Geo.DynamoDB
 {
-    static class DynamoDBUtil
+    internal static class DynamoDBUtil
     {
         public static QueryRequest CopyQueryRequest(this QueryRequest queryRequest)
         {
