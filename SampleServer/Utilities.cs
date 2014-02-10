@@ -23,7 +23,7 @@ namespace SampleServer
         private Utilities()
         {
             Status = Status.NotStarted;
-            ;
+            
         }
 
         public static readonly Utilities Instance = new Utilities();
@@ -70,6 +70,9 @@ namespace SampleServer
 
         public async Task SetupTable()
         {
+            if (!(IsAccessKeySet && IsSecretKeySet && IsRegionNameSet && IsTableNameSet))
+                throw new InvalidOperationException("Not configured yet.");
+
             SetupGeoDataManager();
 
             var config = _geoDataManager.GeoDataManagerConfiguration;
@@ -101,15 +104,28 @@ namespace SampleServer
                 if (_geoDataManager != null)
                     return;
 
+            
+
                 var accessKey = ConfigurationManager.AppSettings["AWS_ACCESS_KEY_ID"];
                 var secretKey = ConfigurationManager.AppSettings["AWS_SECRET_KEY"];
                 var tableName = ConfigurationManager.AppSettings["PARAM1"];
                 var regionName = ConfigurationManager.AppSettings["PARAM2"];
 
+
                 var region = RegionEndpoint.GetBySystemName(regionName);
                 var config = new AmazonDynamoDBConfig {MaxErrorRetry = 20, RegionEndpoint = region};
                 var creds = new BasicAWSCredentials(accessKey, secretKey);
-                
+
+
+                bool useLocalDb;
+                bool.TryParse(ConfigurationManager.AppSettings["AWS_USE_LOCAL_DB"], out useLocalDb);
+
+                if (useLocalDb)
+                {
+                    var localDB = ConfigurationManager.AppSettings["AWS_LOCAL_DYNAMO_DB_ENDPOINT"];
+                    config.ServiceURL = localDB;
+                }
+
                 var ddb = new AmazonDynamoDBClient(creds, config);
 
                 var gConfig = new GeoDataManagerConfiguration(ddb, tableName);
