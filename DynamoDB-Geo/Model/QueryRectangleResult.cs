@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Amazon.Geo.Model
 {
-    public class QueryRectangleResult : GeoQueryResult
+    public sealed class QueryRectangleResult : GeoQueryResult
     {
         public QueryRectangleResult(GeoQueryResult result) : base(result)
         {

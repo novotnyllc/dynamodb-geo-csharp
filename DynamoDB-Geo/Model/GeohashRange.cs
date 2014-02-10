@@ -8,7 +8,7 @@ using Amazon.Geo.S2;
 
 namespace Amazon.Geo.Model
 {
-    public class GeohashRange
+    public sealed class GeohashRange
     {
         public GeohashRange(ulong range1, ulong range2)
         {
@@ -16,9 +16,9 @@ namespace Amazon.Geo.Model
             RangeMax = Math.Max(range1, range2);
         }
 
-        public ulong RangeMin { get; set; }
+        public ulong RangeMin { get; private set; }
 
-        public ulong RangeMax { get; set; }
+        public ulong RangeMax { get; private set; }
 
         public bool TryMerge(GeohashRange range)
         {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Amazon.Geo.Model
 {
-    public class QueryRadiusRequest : GeoQueryRequest
+    public sealed class QueryRadiusRequest : GeoQueryRequest
     {
         public GeoPoint CenterPoint { get; private set; }
         public double RadiusInMeter { get; private set; }

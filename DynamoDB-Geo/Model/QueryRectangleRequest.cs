@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Amazon.Geo.Model
 {
-    public class QueryRectangleRequest : GeoQueryRequest
+    public sealed class QueryRectangleRequest : GeoQueryRequest
     {
         public GeoPoint MinPoint { get; private set; }
         public GeoPoint MaxPoint { get; private set; }

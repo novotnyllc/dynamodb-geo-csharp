@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Amazon.Geo.Model
 {
-    public class GeoPoint : GeoObject
+    public sealed class GeoPoint : GeoObject
     {
         private double[] _coordinates;
 

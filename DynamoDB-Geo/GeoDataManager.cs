@@ -134,8 +134,8 @@ namespace Amazon.Geo
         {
             var result = new List<IDictionary<String, AttributeValue>>();
 
-            S2LatLngRect latLngRect;
-            S2LatLng centerLatLng;
+            S2LatLngRect? latLngRect = null;
+            S2LatLng? centerLatLng = null;
             double radiusInMeter = 0;
             if (geoQueryRequest is QueryRectangleRequest)
             {
@@ -155,12 +155,12 @@ namespace Amazon.Geo
                 var geoPoint = GeoJsonMapper.GeoPointFromString(geoJson);
 
                 var latLng = S2LatLng.FromDegrees(geoPoint.Latitude, geoPoint.Longitude);
-                if (latLngRect != default(S2LatLngRect) && latLngRect.Contains(latLng))
+                if (latLngRect != null && latLngRect.Value.Contains(latLng))
                 {
                     result.Add(item);
                 }
-                else if (centerLatLng != default(S2LatLng) && radiusInMeter > 0
-                         && centerLatLng.GetEarthDistance(latLng) <= radiusInMeter)
+                else if (centerLatLng != null && radiusInMeter > 0
+                         && centerLatLng.Value.GetEarthDistance(latLng) <= radiusInMeter)
                 {
                     result.Add(item);
                 }
