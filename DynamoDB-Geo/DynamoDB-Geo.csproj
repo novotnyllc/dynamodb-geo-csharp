@@ -7,7 +7,7 @@
     <ProjectGuid>{A1F6EC36-8A5F-46D2-B702-0B19C67E679D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DynamoDB_Geo</RootNamespace>
+    <RootNamespace>Amazon.Geo</RootNamespace>
     <AssemblyName>DynamoDB-Geo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -50,7 +50,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DynamoDB\DynamoDBUtil.cs" />
+    <Compile Include="GeoDataManagerConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\GeoTableUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
