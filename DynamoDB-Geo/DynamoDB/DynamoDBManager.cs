@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using Amazon.Geo.Model;
+using Amazon.Geo.S2;
+using Amazon.Geo.Util;
 
 namespace Amazon.Geo.DynamoDB
 {
@@ -19,20 +21,133 @@ namespace Amazon.Geo.DynamoDB
             _config = config;
         }
 
-        /**
-	 * Query Amazon DynamoDB
-	 * 
-	 * @param hashKey
-	 *            Hash key for the query request.
-	 * 
-	 * @param range
-	 *            The range of geohashs to query.
-	 * 
-	 * @return The query result.
-	 */
 
+        public async Task<DeletePointResult> DeletePointAsync(DeletePointRequest deletePointRequest)
+        {
+            if (deletePointRequest == null) throw new ArgumentNullException("deletePointRequest");
+
+            var geohash = S2Manager.GenerateGeohash(deletePointRequest.GeoPoint);
+            var hashKey = S2Manager.GenerateHashKey(geohash, _config.HashKeyLength);
+
+            var deleteItemRequest = deletePointRequest.DeleteItemRequest;
+
+            deleteItemRequest.TableName = _config.TableName;
+
+            var hashKeyValue = new AttributeValue
+            {
+                N = hashKey.ToString(CultureInfo.InvariantCulture)
+            };
+
+            deleteItemRequest.Key[_config.HashKeyAttributeName] = hashKeyValue;
+            deleteItemRequest.Key[_config.RangeKeyAttributeName] = deletePointRequest.RangeKeyValue;
+
+            DeleteItemResult deleteItemResult = await _config.DynamoDBClient.DeleteItemAsync(deleteItemRequest).ConfigureAwait(false);
+            var deletePointResult = new DeletePointResult(deleteItemResult);
+
+            return deletePointResult;
+        }
+
+        public async Task<UpdatePointResult> UpdatePointAsync(UpdatePointRequest updatePointRequest)
+        {
+            if (updatePointRequest == null) throw new ArgumentNullException("updatePointRequest");
+
+            var geohash = S2Manager.GenerateGeohash(updatePointRequest.GeoPoint);
+            var hashKey = S2Manager.GenerateHashKey(geohash, _config.HashKeyLength);
+
+            var updateItemRequest = updatePointRequest.UpdateItemRequest;
+            updateItemRequest.TableName = _config.TableName;
+
+            var hashKeyValue = new AttributeValue
+            {
+                N = hashKey.ToString(CultureInfo.InvariantCulture)
+            };
+
+            updateItemRequest.Key[_config.HashKeyAttributeName] = hashKeyValue;
+            updateItemRequest.Key[_config.RangeKeyAttributeName] = updatePointRequest.RangeKeyValue;
+
+            // Geohash and geoJson cannot be updated.
+            updateItemRequest.AttributeUpdates.Remove(_config.GeohashAttributeName);
+            updateItemRequest.AttributeUpdates.Remove(_config.GeoJsonAttributeName);
+
+            UpdateItemResult updateItemResult = await _config.DynamoDBClient.UpdateItemAsync(updateItemRequest).ConfigureAwait(false);
+            var updatePointResult = new UpdatePointResult(updateItemResult);
+
+            return updatePointResult;
+        }
+
+        public async Task<GetPointResult> GetPointAsync(GetPointRequest getPointRequest)
+        {
+            if (getPointRequest == null) throw new ArgumentNullException("getPointRequest");
+            var geohash = S2Manager.GenerateGeohash(getPointRequest.GeoPoint);
+            var hashKey = S2Manager.GenerateHashKey(geohash, _config.HashKeyLength);
+
+            var getItemRequest = getPointRequest.GetItemRequest;
+            getItemRequest.TableName = _config.TableName;
+
+            var hashKeyValue = new AttributeValue
+            {
+                N = hashKey.ToString(CultureInfo.InvariantCulture)
+            };
+            getItemRequest.Key[_config.HashKeyAttributeName] = hashKeyValue;
+            getItemRequest.Key[_config.RangeKeyAttributeName] = getPointRequest.RangeKeyValue;
+
+            GetItemResult getItemResult = await _config.DynamoDBClient.GetItemAsync(getItemRequest).ConfigureAwait(false);
+            var getPointResult = new GetPointResult(getItemResult);
+
+            return getPointResult;
+        }
+
+        public async Task<PutPointResult> PutPointAsync(PutPointRequest putPointRequest)
+        {
+            if (putPointRequest == null) throw new ArgumentNullException("putPointRequest");
+
+            var geohash = S2Manager.GenerateGeohash(putPointRequest.GeoPoint);
+            var hashKey = S2Manager.GenerateHashKey(geohash, _config.HashKeyLength);
+            var geoJson = GeoJsonMapper.StringFromGeoObject(putPointRequest.GeoPoint);
+
+            var putItemRequest = putPointRequest.PutItemRequest;
+            putItemRequest.TableName = _config.TableName;
+
+            var hashKeyValue = new AttributeValue
+            {
+                N = hashKey.ToString(CultureInfo.InvariantCulture)
+            };
+            putItemRequest.Item[_config.HashKeyAttributeName] = hashKeyValue;
+            putItemRequest.Item[_config.RangeKeyAttributeName] = putPointRequest.RangeKeyValue;
+
+
+            var geohashValue = new AttributeValue
+            {
+                N = geohash.ToString(CultureInfo.InvariantCulture)
+            };
+
+            putItemRequest.Item[_config.GeohashAttributeName] = geohashValue;
+
+            var geoJsonValue = new AttributeValue
+            {
+                S = geoJson
+            };
+
+            putItemRequest.Item[_config.GeoJsonAttributeName] = geoJsonValue;
+
+            PutItemResult putItemResult = await _config.DynamoDBClient.PutItemAsync(putItemRequest).ConfigureAwait(false);
+            var putPointResult = new PutPointResult(putItemResult);
+
+            return putPointResult;
+        }
+
+        /// <summary>
+        ///     Query Amazon DynamoDB
+        /// </summary>
+        /// <param name="queryRequest"></param>
+        /// <param name="hashKey">Hash key for the query request.</param>
+        /// <param name="range">The range of geohashs to query.</param>
+        /// <returns>The query result.</returns>
         public async Task<IReadOnlyList<QueryResult>> QueryGeohashAsync(QueryRequest queryRequest, ulong hashKey, GeohashRange range)
         {
+            if (queryRequest == null) throw new ArgumentNullException("queryRequest");
+            if (range == null) throw new ArgumentNullException("range");
+
             var queryResults = new List<QueryResult>();
             IDictionary<String, AttributeValue> lastEvaluatedKey = null;
 

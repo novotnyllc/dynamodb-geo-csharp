@@ -15,17 +15,17 @@ namespace Amazon.Geo.Model
     public sealed class GetPointRequest : GeoDataRequest
     {
         public GeoPoint GeoPoint { get; private set; }
-        public AttributeValue RangekeyValue { get; private set; }
+        public AttributeValue RangeKeyValue { get; private set; }
         public GetItemRequest GetItemRequest { get; private set; }
 
-        public GetPointRequest(GeoPoint geoPoint, AttributeValue rangekeyValue)
+        public GetPointRequest(GeoPoint geoPoint, AttributeValue rangeKeyValue)
         {
             if (geoPoint == null) throw new ArgumentNullException("geoPoint");
-            if (rangekeyValue == null) throw new ArgumentNullException("rangekeyValue");
+            if (rangeKeyValue == null) throw new ArgumentNullException("rangeKeyValue");
 
             GetItemRequest = new GetItemRequest();
             GeoPoint = geoPoint;
-            RangekeyValue = rangekeyValue;
+            RangeKeyValue = rangeKeyValue;
             
         }
     }
