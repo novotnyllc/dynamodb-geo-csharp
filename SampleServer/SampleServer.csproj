@@ -231,9 +231,9 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DynamoDB-Geo\DynamoDB-Geo.csproj">
+    <ProjectReference Include="..\DynamoDB-Geo\DynamoDB.Geo.csproj">
       <Project>{a1f6ec36-8a5f-46d2-b702-0b19c67e679d}</Project>
-      <Name>DynamoDB-Geo</Name>
+      <Name>DynamoDB.Geo</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
