@@ -46,10 +46,10 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="deletePointRequest">Container for the necessary parameters to execute delete point request.</param>
         /// <returns>Result of delete point request.</returns>
-        public Task<DeletePointResult> DeletePointAsync(DeletePointRequest deletePointRequest)
+        public Task<DeletePointResult> DeletePointAsync(DeletePointRequest deletePointRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (deletePointRequest == null) throw new ArgumentNullException("deletePointRequest");
-            return _dynamoDBManager.DeletePointAsync(deletePointRequest);
+            return _dynamoDBManager.DeletePointAsync(deletePointRequest, cancellationToken);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="queryRadiusRequest">Container for the necessary parameters to execute radius query request.</param>
         /// <returns>Result of radius query request.</returns>
-        public async Task<QueryRadiusResult> QueryRadiusAsync(QueryRadiusRequest queryRadiusRequest)
+        public async Task<QueryRadiusResult> QueryRadiusAsync(QueryRadiusRequest queryRadiusRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (queryRadiusRequest == null) throw new ArgumentNullException("queryRadiusRequest");
             var latLngRect = S2Util.GetBoundingLatLngRect(queryRadiusRequest);
@@ -78,7 +78,7 @@ namespace Amazon.Geo
             var ranges = MergeCells(cellUnion);
             cellUnion = null;
 
-            var result = await DispatchQueries(ranges, queryRadiusRequest).ConfigureAwait(false);
+            var result = await DispatchQueries(ranges, queryRadiusRequest, cancellationToken).ConfigureAwait(false);
             return new QueryRadiusResult(result);
         }
 
@@ -97,10 +97,10 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="getPointRequest">Container for the necessary parameters to execute get point request.</param>
         /// <returns>Result of get point request.</returns>
-        public Task<GetPointResult> GetPointAsync(GetPointRequest getPointRequest)
+        public Task<GetPointResult> GetPointAsync(GetPointRequest getPointRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (getPointRequest == null) throw new ArgumentNullException("getPointRequest");
-            return _dynamoDBManager.GetPointAsync(getPointRequest);
+            return _dynamoDBManager.GetPointAsync(getPointRequest, cancellationToken);
         }
 
         /// <summary>
@@ -121,10 +121,10 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="putPointRequest">Container for the necessary parameters to execute put point request.</param>
         /// <returns>Result of put point request.</returns>
-        public Task<PutPointResult> PutPointAsync(PutPointRequest putPointRequest)
+        public Task<PutPointResult> PutPointAsync(PutPointRequest putPointRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (putPointRequest == null) throw new ArgumentNullException("putPointRequest");
-            return _dynamoDBManager.PutPointAsync(putPointRequest);
+            return _dynamoDBManager.PutPointAsync(putPointRequest, cancellationToken);
         }
 
         /// <summary>
@@ -148,9 +148,9 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="updatePointRequest">Container for the necessary parameters to execute update point request.</param>
         /// <returns>Result of update point request.</returns>
-        public Task<UpdatePointResult> UpdatePointAsync(UpdatePointRequest updatePointRequest)
+        public Task<UpdatePointResult> UpdatePointAsync(UpdatePointRequest updatePointRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _dynamoDBManager.UpdatePointAsync(updatePointRequest);
+            return _dynamoDBManager.UpdatePointAsync(updatePointRequest, cancellationToken);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="queryRectangleRequest">Container for the necessary parameters to execute rectangle query request.</param>
         /// <returns>Result of rectangle query request.</returns>
-        public async Task<QueryRectangleResult> QueryRectangleAsync(QueryRectangleRequest queryRectangleRequest)
+        public async Task<QueryRectangleResult> QueryRectangleAsync(QueryRectangleRequest queryRectangleRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (queryRectangleRequest == null) throw new ArgumentNullException("queryRectangleRequest");
             var latLngRect = S2Util.GetBoundingLatLngRect(queryRectangleRequest);
@@ -181,7 +181,7 @@ namespace Amazon.Geo
 
             var ranges = MergeCells(cellUnion);
 
-            var result = await DispatchQueries(ranges, queryRectangleRequest).ConfigureAwait(false);
+            var result = await DispatchQueries(ranges, queryRectangleRequest, cancellationToken).ConfigureAwait(false);
             return new QueryRectangleResult(result);
         }
 
@@ -190,7 +190,7 @@ namespace Amazon.Geo
         /// </summary>
         /// <param name="cellUnion">Container for multiple cells.</param>
         /// <returns>A list of merged GeohashRanges.</returns>
-        private List<GeohashRange> MergeCells(S2CellUnion cellUnion)
+        private static List<GeohashRange> MergeCells(S2CellUnion cellUnion)
         {
             var ranges = new List<GeohashRange>();
             foreach (var c in cellUnion.CellIds)
@@ -262,15 +262,18 @@ namespace Amazon.Geo
             return result;
         }
 
-        private async Task<GeoQueryResult> DispatchQueries(IEnumerable<GeohashRange> ranges, GeoQueryRequest geoQueryRequest)
+        private async Task<GeoQueryResult> DispatchQueries(IEnumerable<GeohashRange> ranges, GeoQueryRequest geoQueryRequest, CancellationToken cancellationToken)
         {
             var geoQueryResult = new GeoQueryResult();
 
 
             var futureList = new List<Task>();
 
-            var cts = new CancellationTokenSource();
+            var internalSource = new CancellationTokenSource();
+            var internalToken = internalSource.Token;
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, internalToken);
 
+            
             foreach (var outerRange in ranges)
             {
                 foreach (var range in outerRange.TrySplit(_config.HashKeyLength))
@@ -293,7 +296,7 @@ namespace Amazon.Geo
                     {
                         inner = e;
                         // cancel the others
-                        cts.Cancel(true);
+                        internalSource.Cancel(true);
                     }
                 }
             }
@@ -312,7 +315,7 @@ namespace Amazon.Geo
             var queryRequest = request.QueryRequest.CopyQueryRequest();
             var hashKey = S2Manager.GenerateHashKey(range.RangeMin, _config.HashKeyLength);
 
-            var results = await _dynamoDBManager.QueryGeohashAsync(queryRequest, hashKey, range).ConfigureAwait(false);
+            var results = await _dynamoDBManager.QueryGeohashAsync(queryRequest, hashKey, range, cancellationToken).ConfigureAwait(false);
 
             foreach (var queryResult in results)
             {
@@ -325,7 +328,7 @@ namespace Amazon.Geo
 
                 // this is a concurrent collection
                 foreach (var r in filteredQueryResult)
-                    geoQueryResult.Item.Add(r);
+                    geoQueryResult.Items.Add(r);
             }
         }
     }
