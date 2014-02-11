@@ -68,7 +68,7 @@ namespace SampleServer.Controllers
         public async Task<ActionResult> QueryRadius(RadiusQuery query)
         {
             if (!ModelState.IsValid)
-                return Json("{\"result\":\"Bad Request\"}", JsonRequestBehavior.AllowGet);
+                return Json("Bad Request", JsonRequestBehavior.AllowGet);
 
             var centerPoint = new GeoPoint(query.Lat, query.Lng);
             var radius = query.RadiusInMeters;
@@ -85,6 +85,41 @@ namespace SampleServer.Controllers
 
             var result = await _geoDataManager.QueryRadiusAsync(radReq);
 
+            var dtos = GetResultsFromQuery(result);
+            
+
+            return Json(dtos, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> QueryRectangle(RectangleQuery query)
+        {
+            if (!ModelState.IsValid)
+                return Json("{\"result\":\"Bad Request\"}", JsonRequestBehavior.AllowGet);
+
+            var min = new GeoPoint(query.MinLat, query.MinLng);
+            var max = new GeoPoint(query.MaxLat, query.MaxLng);
+            
+
+            var attributesToGet = new List<string>
+            {
+                _config.RangeKeyAttributeName,
+                _config.GeoJsonAttributeName,
+                "schoolName"
+            };
+
+            var radReq = new QueryRectangleRequest(min, max);
+            radReq.QueryRequest.AttributesToGet = attributesToGet;
+
+            var result = await _geoDataManager.QueryRectangleAsync(radReq);
+
+            var dtos = GetResultsFromQuery(result);
+
+
+            return Json(dtos, JsonRequestBehavior.AllowGet);
+        }
+
+        private IEnumerable<SchoolSearchResult> GetResultsFromQuery(GeoQueryResult result)
+        {
             var dtos = from item in result.Items
                        let geoJsonString = item[_config.GeoJsonAttributeName].S
                        let point = JsonConvert.DeserializeObject<GeoPoint>(geoJsonString)
@@ -96,7 +131,7 @@ namespace SampleServer.Controllers
                            SchoolName = item.ContainsKey("schoolName") ? item["schoolName"].S : string.Empty
                        };
 
-            return Json(dtos, JsonRequestBehavior.AllowGet);
+            return dtos;
         }
 
         

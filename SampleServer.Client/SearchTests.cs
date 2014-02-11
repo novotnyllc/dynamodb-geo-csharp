@@ -37,5 +37,25 @@ namespace SampleServer.Client
 
             Assert.AreEqual(324, arr.Length);
         }
+
+        [TestMethod]
+        public async Task QueryRectangleTest()
+        {
+            const double latitudeMin = 47.01121;
+            const double latitudeMax = 48.0;
+            const double longitudeMin = -123.0;
+            const double longitudeMax = -122.31846;
+
+
+            var url = string.Format(CultureInfo.InvariantCulture, "search/QueryRectangle?maxLat={0}&maxLng={1}&minLat={2}&minLng={3}", latitudeMax, longitudeMax, latitudeMin, longitudeMin);
+
+            var result = await _client.GetStringAsync(url);
+
+            var arr = JsonConvert.DeserializeObject<SchoolSearchResult[]>(result);
+
+            // For this search with the populated data, we should get 870 results
+
+            Assert.AreEqual(870, arr.Length);
+        }
     }
 }
