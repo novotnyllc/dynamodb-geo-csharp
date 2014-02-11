@@ -71,6 +71,9 @@ namespace Amazon.Geo
         public async Task<QueryRadiusResult> QueryRadiusAsync(QueryRadiusRequest queryRadiusRequest, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (queryRadiusRequest == null) throw new ArgumentNullException("queryRadiusRequest");
+            if (queryRadiusRequest.RadiusInMeter <= 0 || queryRadiusRequest.RadiusInMeter > S2LatLng.EarthRadiusMeters)
+                throw new ArgumentOutOfRangeException("queryRadiusRequest", "RadiusInMeter needs to be greater than 0 and <= " + S2LatLng.EarthRadiusMeters);
+
             var latLngRect = S2Util.GetBoundingLatLngRect(queryRadiusRequest);
 
             var cellUnion = S2Manager.FindCellIds(latLngRect);
