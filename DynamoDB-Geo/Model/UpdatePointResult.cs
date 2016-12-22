@@ -9,9 +9,9 @@ namespace Amazon.Geo.Model
 {
     public sealed class UpdatePointResult : GeoDataResult
     {
-        public UpdateItemResult UpdateItemResult { get; private set; }
+        public UpdateItemResponse UpdateItemResult { get; private set; }
 
-        public UpdatePointResult(UpdateItemResult updateItemResult)
+        public UpdatePointResult(UpdateItemResponse updateItemResult)
         {
             if (updateItemResult == null) throw new ArgumentNullException("updateItemResult");
             UpdateItemResult = updateItemResult;

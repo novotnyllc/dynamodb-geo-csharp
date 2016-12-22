@@ -42,7 +42,7 @@ namespace Amazon.Geo.DynamoDB
             deleteItemRequest.Key[_config.HashKeyAttributeName] = hashKeyValue;
             deleteItemRequest.Key[_config.RangeKeyAttributeName] = deletePointRequest.RangeKeyValue;
 
-            DeleteItemResult deleteItemResult = await _config.DynamoDBClient.DeleteItemAsync(deleteItemRequest, cancellationToken).ConfigureAwait(false);
+            DeleteItemResponse deleteItemResult = await _config.DynamoDBClient.DeleteItemAsync(deleteItemRequest, cancellationToken).ConfigureAwait(false);
             var deletePointResult = new DeletePointResult(deleteItemResult);
 
             return deletePointResult;
@@ -70,7 +70,7 @@ namespace Amazon.Geo.DynamoDB
             updateItemRequest.AttributeUpdates.Remove(_config.GeohashAttributeName);
             updateItemRequest.AttributeUpdates.Remove(_config.GeoJsonAttributeName);
 
-            UpdateItemResult updateItemResult = await _config.DynamoDBClient.UpdateItemAsync(updateItemRequest, cancellationToken).ConfigureAwait(false);
+            UpdateItemResponse updateItemResult = await _config.DynamoDBClient.UpdateItemAsync(updateItemRequest, cancellationToken).ConfigureAwait(false);
             var updatePointResult = new UpdatePointResult(updateItemResult);
 
             return updatePointResult;
@@ -92,7 +92,7 @@ namespace Amazon.Geo.DynamoDB
             getItemRequest.Key[_config.HashKeyAttributeName] = hashKeyValue;
             getItemRequest.Key[_config.RangeKeyAttributeName] = getPointRequest.RangeKeyValue;
 
-            GetItemResult getItemResult = await _config.DynamoDBClient.GetItemAsync(getItemRequest, cancellationToken).ConfigureAwait(false);
+            GetItemResponse getItemResult = await _config.DynamoDBClient.GetItemAsync(getItemRequest, cancellationToken).ConfigureAwait(false);
             var getPointResult = new GetPointResult(getItemResult);
 
             return getPointResult;
@@ -131,7 +131,7 @@ namespace Amazon.Geo.DynamoDB
 
             putItemRequest.Item[_config.GeoJsonAttributeName] = geoJsonValue;
 
-            PutItemResult putItemResult = await _config.DynamoDBClient.PutItemAsync(putItemRequest, cancellationToken).ConfigureAwait(false);
+            PutItemResponse putItemResult = await _config.DynamoDBClient.PutItemAsync(putItemRequest, cancellationToken).ConfigureAwait(false);
             var putPointResult = new PutPointResult(putItemResult);
 
             return putPointResult;
@@ -144,12 +144,12 @@ namespace Amazon.Geo.DynamoDB
         /// <param name="hashKey">Hash key for the query request.</param>
         /// <param name="range">The range of geohashs to query.</param>
         /// <returns>The query result.</returns>
-        public async Task<IReadOnlyList<QueryResult>> QueryGeohashAsync(QueryRequest queryRequest, ulong hashKey, GeohashRange range, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IReadOnlyList<QueryResponse>> QueryGeohashAsync(QueryRequest queryRequest, ulong hashKey, GeohashRange range, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (queryRequest == null) throw new ArgumentNullException("queryRequest");
             if (range == null) throw new ArgumentNullException("range");
 
-            var queryResults = new List<QueryResult>();
+            var queryResults = new List<QueryResponse>();
             IDictionary<String, AttributeValue> lastEvaluatedKey = null;
 
             do
@@ -203,7 +203,7 @@ namespace Amazon.Geo.DynamoDB
                         lastEvaluatedKey[_config.HashKeyAttributeName];
                 }
 
-                QueryResult queryResult = await _config.DynamoDBClient.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
+                QueryResponse queryResult = await _config.DynamoDBClient.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
                 queryResults.Add(queryResult);
 
                 lastEvaluatedKey = queryResult.LastEvaluatedKey;

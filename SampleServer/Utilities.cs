@@ -10,7 +10,6 @@ using System.Web.Http.Controllers;
 using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using Amazon.EC2.Model;
 using Amazon.Geo;
 using Amazon.Geo.Model;
 using Amazon.Geo.Util;
