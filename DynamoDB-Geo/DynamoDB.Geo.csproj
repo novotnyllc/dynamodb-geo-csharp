@@ -1,13 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net45;netstandard1.3</TargetFrameworks>
     <Product>DynamoDB.Geo ($(TargetFramework))</Product>
     <IncludeSymbols>true</IncludeSymbols>
     <Authors>Oren Novotny</Authors>
-    <Description>
-      The Geo Library for Amazon DynamoDB enables .NET developers to easily create and query geospatial data.
-      This version targets .NET 4.5 and NET Standard 1.3
-    </Description>
+    <Description>The Geo Library for Amazon DynamoDB enables .NET developers to easily create and query geospatial data. This version targets .NET 4.5 and NET Standard 1.3</Description>
     <Copyright>© Oren Novotny 2017</Copyright>
     <PackageLicenseUrl>https://raw.github.com/onovotny/dynamodb-geo-csharp/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/onovotny/dynamodb-geo-csharp</PackageProjectUrl>
@@ -25,5 +22,8 @@
     <PackageReference Condition=" '$(TargetFramework)' == 'netstandard1.3' " Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="S2Geometry" Version="1.0.3" />
+    <PackageReference Include="GitVersionTask" Version="4.0.0-pullrequest1119-1208">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>
