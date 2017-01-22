@@ -11,7 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SampleServer.Client", "Samp
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B53C4AFF-29AD-46E0-BFA9-6C2EB97296C1}"
 	ProjectSection(SolutionItems) = preProject
-		DynamoDB.Geo.nuspec = DynamoDB.Geo.nuspec
 		README.md = README.md
 	EndProjectSection
 EndProject

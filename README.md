@@ -22,7 +22,7 @@ running quickly with a local IIS Express application and running the unit tests.
 ##Getting Started
 ###Setup Environment
 1. **Sign up for AWS** - Before you begin, you need an AWS account. Please see the [AWS Account and Credentials][docs-signup] section of the developer guide for information about how to create an AWS account and retrieve your AWS credentials.
-2. **Minimum .NET requirements** - To run the SDK you will need **.NET 4.5+**. 
+2. **Minimum .NET requirements** - To run the SDK you will need platforms supporting either **NET Standard 1.3** or **.NET 4.5+**. 
 3. **Download Geo Library for Amazon DynamoDB** - To download the code from GitHub, simply clone the repository by typing: `git clone https://github.com/onovotny/dynamodb-geo-csharp.git`.
 4. **NuGet Package** - For use in your applicatin, it's recommended to use the Nuget Package. Run `Install-Package DynamoDB.Geo` in the package manager console.
 
