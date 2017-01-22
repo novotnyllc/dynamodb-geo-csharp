@@ -9,13 +9,13 @@ namespace Amazon.Geo.Model
 {
     public sealed class DeletePointResult : GeoDataResult
     {
-        public DeletePointResult(DeleteItemResult deleteItemResult)
+        public DeletePointResult(DeleteItemResponse deleteItemResult)
         {
             if (deleteItemResult == null) throw new ArgumentNullException("deleteItemResult");
 
             DeleteItemResult = deleteItemResult;
         }
 
-        public DeleteItemResult DeleteItemResult { get; private set; }
+        public DeleteItemResponse DeleteItemResult { get; private set; }
     }
 }

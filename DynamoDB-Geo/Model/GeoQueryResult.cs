@@ -11,12 +11,12 @@ namespace Amazon.Geo.Model
     public class GeoQueryResult : GeoDataResult
     {
         private readonly ConcurrentBag<IDictionary<string, AttributeValue>> _items;
-        private readonly ConcurrentBag<QueryResult> _queryResults;
+        private readonly ConcurrentBag<QueryResponse> _queryResults;
 
         public GeoQueryResult()
         {
             _items = new ConcurrentBag<IDictionary<string, AttributeValue>>();
-            _queryResults = new ConcurrentBag<QueryResult>();
+            _queryResults = new ConcurrentBag<QueryResponse>();
         }
 
         public GeoQueryResult(GeoQueryResult geoQueryResult)
@@ -26,6 +26,6 @@ namespace Amazon.Geo.Model
         }
 
         public ConcurrentBag<IDictionary<string, AttributeValue>> Items { get { return _items; } }
-        public ConcurrentBag<QueryResult> QueryResults { get { return _queryResults; } }
+        public ConcurrentBag<QueryResponse> QueryResults { get { return _queryResults; } }
     }
 }
