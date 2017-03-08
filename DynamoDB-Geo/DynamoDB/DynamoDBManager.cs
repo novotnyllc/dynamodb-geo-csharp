@@ -151,7 +151,6 @@ namespace Amazon.Geo.DynamoDB
 
             var queryResults = new List<QueryResponse>();
             IDictionary<String, AttributeValue> lastEvaluatedKey = null;
-
             do
             {
                 var keyConditions = new Dictionary<String, Condition>();
@@ -199,8 +198,9 @@ namespace Amazon.Geo.DynamoDB
 
                 if (lastEvaluatedKey != null && lastEvaluatedKey.Count > 0)
                 {
-                    queryRequest.ExclusiveStartKey[_config.HashKeyAttributeName] =
-                        lastEvaluatedKey[_config.HashKeyAttributeName];
+                    queryRequest.ExclusiveStartKey[_config.HashKeyAttributeName] = lastEvaluatedKey[_config.HashKeyAttributeName];
+                    queryRequest.ExclusiveStartKey[_config.RangeKeyAttributeName] = lastEvaluatedKey[_config.RangeKeyAttributeName];
+                    queryRequest.ExclusiveStartKey[_config.GeohashAttributeName] = lastEvaluatedKey[_config.GeohashAttributeName];
                 }
 
                 QueryResponse queryResult = await _config.DynamoDBClient.QueryAsync(queryRequest, cancellationToken).ConfigureAwait(false);
