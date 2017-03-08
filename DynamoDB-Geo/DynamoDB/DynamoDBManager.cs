@@ -13,7 +13,7 @@ using Amazon.Geo.Util;
 
 namespace Amazon.Geo.DynamoDB
 {
-    public sealed class DynamoDBManager
+    internal sealed class DynamoDBManager
     {
         private readonly GeoDataManagerConfiguration _config;
 
@@ -207,7 +207,6 @@ namespace Amazon.Geo.DynamoDB
                 queryResults.Add(queryResult);
 
                 lastEvaluatedKey = queryResult.LastEvaluatedKey;
-               
             } while (lastEvaluatedKey != null && lastEvaluatedKey.Count > 0);
 
             return queryResults;
