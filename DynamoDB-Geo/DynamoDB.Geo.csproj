@@ -14,16 +14,9 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="**\*.cs" />
-    <EmbeddedResource Include="**\*.resx" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.3.2.1" />
-    <PackageReference Condition=" '$(TargetFramework)' == 'netstandard1.3' " Include="NETStandard.Library" Version="1.6.1" />
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="S2Geometry" Version="1.0.3" />
-    <PackageReference Include="GitVersionTask" Version="4.0.0-pullrequest1119-1208">
-      <PrivateAssets>All</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="GitVersionTask" Version="4.0.0-beta0011" PrivateAssets="all" />
   </ItemGroup>
 </Project>
